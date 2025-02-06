@@ -17,6 +17,9 @@ model Book {
   id       Int      @id @default(autoincrement()) 
   title     String
   author    String
+  gender   String
+  publishedAt DateTime
+  pagesNumber Int @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
 }
