@@ -1,64 +1,75 @@
 import prisma from '../prisma/client.js'
 
-export const getAllBooks = () => {
-    return prisma.book.findMany()
+export const getAllBooks = async (req, res) => {
+    try {
+        const books = await prisma.book.findMany()
+        res.json(books)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
 }
 
+export const getBookById = async (req, res) => {
+    try {
+        const { id } = req.params
+        const result = await prisma.book.findUnique({
+            where: {
+                id: Number(id)
+            }
+        })
 
-export const getBookById = (req , res ) => {
-    const { id } = req.params
-    const result =  prisma.book.findUnique({
-        where: {
-            id: Number(id)
+        if (!result) {
+            return res.status(404).json({ error: 'Book not found' })
         }
-    })
 
-    if (!result) {
-        res.send('Book not found')
+        res.json(result)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
     }
-
-    res.send(result)
 }
 
-export const updateBook = (req , res) => {
-    const response = prisma.book.update({
-        where: {
-            id: Number(id)
-        },
-        data
-    })
+export const updateBook = async (req, res) => {
+    try {
+        const { id } = req.params
+        const data = req.body
+        const response = await prisma.book.update({
+            where: {
+                id: Number(id)
+            },
+            data
+        })
 
-    if(!response) {
-        res.send('Error updating book')
+        res.json(response)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
     }
-
-    res.send('Book updated successfully')
 }
 
-export const deleteBook = (id) =>{
-    const response = primsa.book.delete({
-        where: {
-            id: Number(id)
-        }
-    })
+export const deleteBook = async (req, res) => {
+    try {
+        const { id } = req.params
+        await prisma.book.delete({
+            where: {
+                id: Number(id)
+            }
+        })
 
-    if (!response) {
-        res.send('Error deleting book')
+        res.json({ message: 'Book deleted successfully' })
+    } catch (error) {
+        res.status(500).json({ error: error.message })
     }
-
-    res.send('Book deleted successfully')
 }
 
-export const createBook = (req, res) =>{
-    const data = req.body
-    const response = prisma.book.create({
-        data
-    })
+export const createBook = async (req, res) => {
+    try {
+        const data = req.body
+        const response = await prisma.book.create({
+            data
+        })
 
-    if (!response) {
-        res.send('Error creating book')
+        res.status(201).json(response)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
     }
-
-    res.send('Book created successfully')
 }
 
