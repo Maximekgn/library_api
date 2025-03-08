@@ -1,5 +1,11 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '..');
 
 const options = {
   definition: {
@@ -11,12 +17,12 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Development server',
+        url: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000',
+        description: process.env.VERCEL_URL ? 'Production server' : 'Development server',
       },
     ],
   },
-  apis: ['./routes/**/*.js'], // Path to the API routes
+  apis: [path.join(rootDir, 'routes/**/*.js')], // Path to the API routes using absolute path
 };
 
 const specs = swaggerJSDoc(options);
